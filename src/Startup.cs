@@ -56,7 +56,7 @@ namespace AdvantageTool
             // within an iframe on the platform
             services.AddAntiforgery(options => options.SuppressXFrameOptionsHeader = true);
 
-            services.AddMvc()
+            services.AddMvc(setup => setup.EnableEndpointRouting = false)
                 .AddRazorPagesOptions(options => options.Conventions.AuthorizeFolder("/Platforms"))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -72,7 +72,7 @@ namespace AdvantageTool
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                //app.UseDatabaseErrorPage();
             }
             else
             {

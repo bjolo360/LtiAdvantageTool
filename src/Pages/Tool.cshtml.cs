@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
@@ -16,6 +17,7 @@ using LtiAdvantage.Lti;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
@@ -365,27 +367,27 @@ namespace AdvantageTool.Pages
         private RedirectResult Relaunch(string iss, string userId, string resourceLinkId, string contextId)
         {
             // Send request to tool's endpoint to initiate login
-            var values = new
+            var values = new []
             {
                 // The issuer identifier for the platform
-                iss,
+                KeyValuePair.Create("iss", ""),
 
                 // The platform identifier for the user to login
-                login_hint = userId,
+                KeyValuePair.Create("login_hint", userId),
 
                 // The endpoint to be executed at the end of the OIDC authentication flow
-                target_link_uri = Url.Page("./Tool", null, null, Request.Scheme),
+                KeyValuePair.Create("target_link_uri", Url.Page("./Tool", null, null, Request.Scheme)),
 
                 // The identifier of the LtiResourceLink message (or the deep link message, etc)
-                lti_message_hint = JsonConvert.SerializeObject(new
+                KeyValuePair.Create("lti_message_hint", JsonConvert.SerializeObject(new
                 {
                     id = resourceLinkId, 
                     messageType = Constants.Lti.LtiResourceLinkRequestMessageType, 
                     courseId = contextId
-                })
+                }))
             };
 
-            var url = new RequestUrl(Url.Page("./OidcLogin")).Create(values);
+            var url = new RequestUrl(Url.Page("./OidcLogin")).Create(new Parameters(values));
             return Redirect(url);
         }
         
@@ -400,7 +402,7 @@ namespace AdvantageTool.Pages
             var response = HttpContext.Response;
             response.Clear();
 
-            var dictionary = ValuesHelper.ObjectToDictionary(values);
+            var dictionary = HtmlHelper.ObjectToDictionary(values);
 
             var s = new StringBuilder();
             s.Append("<html><head><title></title></head>");

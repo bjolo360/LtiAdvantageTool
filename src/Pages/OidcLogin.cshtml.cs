@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AdvantageTool.Data;
 using IdentityModel;
@@ -145,7 +146,7 @@ namespace AdvantageTool.Pages
                 prompt: "none",
 
                 // The messagedId (i.e. resource link id or deep link id)
-                extra: new { lti_message_hint = LtiMessageHint }
+                extra: new Parameters(new[] { KeyValuePair.Create("lti_message_hint", LtiMessageHint) })
             );
 
             _logger.LogInformation("Requesting id_token.");
